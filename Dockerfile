@@ -1,13 +1,11 @@
-FROM ubuntu:20.04
-
-MAINTAINER zocker_160
+FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG PYTHON_VER_MAJ=3.10
-ARG PYTHON_VER=3.10.2
+ARG PYTHON_VER=3.10.5
 
-ARG BLENDER_VERSION=3.0
+ARG BLENDER_VERSION=3.2
 
 ENV PYTHON_SITE_PACKAGES /usr/local/lib/python$PYTHON_VER_MAJ/site-packages/
 ENV WITH_INSTALL_PORTABLE OFF
@@ -55,6 +53,7 @@ RUN make bpy
 WORKDIR /home/tmp/blender/build_linux_bpy
 RUN ls -l
 RUN cmake .. \
+    -DWITH_CYCLES_CUDA_BINARIES=ON \
     -DPYTHON_SITE_PACKAGES=/usr/local/lib/python$PYTHON_VER_MAJ/site-packages/ \
     -DWITH_INSTALL_PORTABLE=OFF \
     -DWITH_PYTHON_INSTALL=OFF \
