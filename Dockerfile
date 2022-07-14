@@ -30,7 +30,6 @@ ADD https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz Python.
 RUN tar xzf Python.tgz
 WORKDIR /home/tmp/python/Python-$PYTHON_VER
 RUN ./configure --enable-optimizations
-#RUN ./configure
 RUN make -j$(nproc) install
 
 #RUN apt-get install -y python3.10
@@ -63,17 +62,14 @@ RUN cmake .. \
     -DWITH_MEM_JEMALLOC=OFF # workaround for some weird TLS import bug
 RUN make install -j$(nproc)
 
-#RUN ls -l /home/tmp/build_linux_bpy/bin
+# Rebuild python - this is a hack to avoid a long rebuild
+RUN apt-get -y install \
+    openssl libssl-dev \
+    libffi-dev
 
-# move files into position
-#RUN cp /home/tmp/build_linux_bpy/bin/bpy.so /usr/local/lib/python$PYTHON_VER_MAJ/site-packages
-#RUN cp -r /home/tmp/build_linux_bpy/bin/$BLENDER_VERSION /usr/local/lib/python$PYTHON_VER_MAJ/site-packages
-
-#RUN cp -r /home/tmp/lib/linux_centos7_x86_64/python/lib/python$PYTHON_VER_MAJ/site-packages/$BLENDER_VERSION /usr/local/lib/python$PYTHON_VER_MAJ/site-packages/
-
-#WORKDIR /bpy
-#RUN mv /home/tmp/build_linux_bpy/bin/bpy.so .
-#RUN mv /home/tmp/lib/linux_centos7_x86_64/python/lib/python$PYTHON_VER_MAJ/site-packages/$BLENDER_VERSION .
+WORKDIR /home/tmp/python/Python-$PYTHON_VER
+RUN ./configure --enable-optimizations
+RUN make -j$(nproc) install
 
 # cleanup
 RUN rm -rf /home/tmp
@@ -84,20 +80,3 @@ WORKDIR /home
 RUN python3 -c "import bpy;print(dir(bpy.types));print(bpy.app.version_string);"
 
 CMD bash
-
-#RUN python3 -c "import bpy;print(dir(bpy.types));"
-
-#FROM python:3.7.9-buster
-
-#RUN apt-get update && apt-get install -y sudo
-
-#COPY --from=builder /home/docker/build_linux_bpy/bin/bpy.so /usr/local/lib/python3.7/site-packages
-#COPY --from=builder /home/docker/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/2.91 /usr/local/lib/python3.7/site-packages/
-
-#WORKDIR /tmp
-#ADD https://raw.githubusercontent.com/sobotka/blender/master/build_files/build_environment/install_deps.sh install_deps.sh
-#RUN chmod +x install_deps.sh && ./install_deps.sh
-
-#WORKDIR /home/blender
-
-#CMD bash
