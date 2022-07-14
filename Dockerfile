@@ -54,6 +54,7 @@ WORKDIR /home/tmp/blender/build_linux_bpy
 RUN ls -l
 RUN cmake .. \
     -DWITH_CYCLES_CUDA_BINARIES=ON \
+    -DCYCLES_CUDA_BINARIES_ARCH=sm_75 \
     -DPYTHON_SITE_PACKAGES=/usr/local/lib/python$PYTHON_VER_MAJ/site-packages/ \
     -DWITH_INSTALL_PORTABLE=OFF \
     -DWITH_PYTHON_INSTALL=OFF \
